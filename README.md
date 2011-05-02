@@ -8,21 +8,21 @@
 пространство имен, а группируются в специально отведенной
 для них переменной. Базовое имя задается в константе **NS**.
 
-   APP.namespace("APP.Module1");
+    APP.namespace("APP.Module1");
 
 Можно использовать укороченный синтаксис, чтобы получить аналогичный результат:
 
-   APP.namespace("Module1");
+    APP.namespace("Module1");
 
 Второй опциональный параметр задает исходный объект, который
 нужно расширить существующими полями и методами, если они уже есть.
 
-   APP.namespace("APP.Module1", {
-       field: "field 1",
-       method: function (a, b) {
-           return a + b;
-       }
-   });
+    APP.namespace("APP.Module1", {
+        field: "field 1",
+        method: function (a, b) {
+            return a + b;
+        }
+    });
 
 ## module()
 
@@ -30,11 +30,10 @@
 от исходного. Подробнее о схеме работы можно прочесть в статье
 Дугласа Крокфорда «[Наследование через прототип](http://javascript.crockford.com/prototypal.html)».
 
-   var M = APP.module({
-       method: function (a, b) {
-           return a + b;
-       }
-   });
+    var M = APP.module({
+        method: function (a, b) {
+            return a + b;
+        }
+    });
 
-   APP.namespace("APP.Module", M);
-
+    APP.namespace("APP.Module", M);

@@ -6,13 +6,16 @@
 
     function extend(receiver, sender) {
         for (var prop in sender) {
-            if (sender[prop] !== undefined) {
+            if (sender[prop] != undefined && receiver[prop] == undefined) {
                 receiver[prop] = sender[prop];
             }
         }
         return receiver;
     }
 
+    function isObject(obj) {
+        return obj && Object.prototype.toString.call(obj) === "[object Object]";
+    }
 
     /**
      * Get or create namespace for module
@@ -28,7 +31,7 @@
 
         for (i = (ns[0] === NS) ? 1 : 0; i < ns.length; i++) {
             part = obj[ns[i]] || {};
-            obj = obj[ns[i]] = i === ns.length - 1 && origin && Object.prototype.toString.call(origin) === "[object Object]" ?
+            obj = obj[ns[i]] = i === ns.length - 1 && isObject(origin) ?
                     extend(origin, part) : part;
         }
 

@@ -27,7 +27,7 @@ test("namespace basic", function () {
 
 test("namespace extend", function () {
 
-    // expect(10);
+    expect(5);
 
     var ns = APP.namespace;
 
@@ -55,6 +55,51 @@ test("namespace extend", function () {
     equals(APP.Module3.SubModule.field1, "field 1");
     equals(APP.Module3.SubModule.field2, "field 2");
 
+});
 
+test("partial extend", function () {
+
+    expect(3);
+
+    var ns = APP.namespace;
+
+    var o = {
+        a: "test",
+        b: null,
+        c: false,
+        d: 0,
+        e: "",
+        f: (function (undef) { return undef; })()
+    };
+
+    ns("APP.Module4", o);
+
+    equals(APP.Module4, o);
+
+    ns("APP.Module4", {
+        field1: "data"
+    });
+
+    deepEqual(APP.Module4, {
+        field1: "data",
+        a: "test",
+        c: false,
+        d: 0,
+        e: ""
+    });
+
+    ns("APP.Module4", {
+        field1: "value1",
+        field2: "value2"
+    });
+
+    deepEqual(APP.Module4, {
+        field1: "value1",
+        field2: "value2",
+        a: "test",
+        c: false,
+        d: 0,
+        e: ""
+    });
 
 });

@@ -6,7 +6,9 @@
 
     function extend(receiver, sender) {
         for (var prop in sender) {
-            receiver[prop] = sender[prop];
+            if (sender[prop] !== undefined) {
+                receiver[prop] = sender[prop];
+            }
         }
         return receiver;
     }
@@ -20,17 +22,14 @@
      * @return              {Object}
      */
     app.namespace = function (ns, origin) {
-        var i, obj = window[NS];
+        var i, obj = window[NS], part;
 
         ns = ns.split(".");
 
         for (i = (ns[0] === NS) ? 1 : 0; i < ns.length; i++) {
-            obj = obj[ns[i]] = (function (part, isLast) {
-                if (isLast && Object.prototype.toString.call(origin) === "[object Object]") {
-                    part = extend(origin, part);
-                }
-                return part;
-            }(obj[ns[i]] || {}, i === ns.length - 1));
+            part = obj[ns[i]] || {};
+            obj = obj[ns[i]] = i === ns.length - 1 && origin && Object.prototype.toString.call(origin) === "[object Object]" ?
+                    extend(origin, part) : part;
         }
 
         return obj;

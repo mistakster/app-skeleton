@@ -80,29 +80,22 @@ test("dependecy duplicates", function () {
 
     var D = APP.Dependency;
 
-    D.add({
+    D.add([{
         name: "m1",
-        path: "/scripts/m1.js",
-        requires: []
-    });
-
-    D.add({
+        path: "/scripts/m1.js"
+    }, {
         name: "m2",
         path: "/scripts/m2.js",
         requires: ["m1"]
-    });
-
-    D.add({
+    }, {
         name: "m3",
         path: "/scripts/m3.js",
         requires: ["m2", "m1"]
-    });
-
-    D.add({
+    }, {
         name: "m4",
         path: "/scripts/m4.js",
         requires: ["m3", "m1", "m2"]
-    });
+    }]);
 
     deepEqual(D.calculate("m3"), [
         "/scripts/m1.js",
@@ -123,29 +116,21 @@ test("dependecy for collection", function () {
 
     var D = APP.Dependency;
 
-    D.add({
+    D.add([{
         name: "m1",
-        path: "/scripts/m1.js",
-        requires: []
-    });
-
-    D.add({
+        path: "/scripts/m1.js"
+    }, {
         name: "m2",
         path: "/scripts/m2.js",
         requires: ["m1"]
-    });
-
-    D.add({
+    }, {
         name: "m3",
-        path: "/scripts/m3.js",
-        requires: []
-    });
-
-    D.add({
+        path: "/scripts/m3.js"
+    }, {
         name: "m4",
         path: "/scripts/m4.js",
         requires: ["m3", "m2"]
-    });
+    }]);
 
     deepEqual(D.calculate(["m2", "m3"]), [
         "/scripts/m1.js",

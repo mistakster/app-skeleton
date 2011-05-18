@@ -15,14 +15,27 @@
 
         /**
          * Добавляем список зависимостей модуля в приложение
-         * @param module
+         * @param module    {Object|Array}
          */
         add: function (module) {
-            if (module && module.name) {
-                D._dependencies[module.name] = {
-                    path: module.path || "",
-                    requires: module.requires || []
-                };
+
+            function register(m) {
+                if (m && m.name) {
+                    D._dependencies[m.name] = {
+                        path: m.path || "",
+                        requires: m.requires || []
+                    };
+                }
+            }
+
+            var i;
+
+            if (APP.Lang.isArray(module)) {
+                for (i = module.length; i--;) {
+                    register(module[i]);
+                }
+            } else {
+                register(module);
             }
         },
 

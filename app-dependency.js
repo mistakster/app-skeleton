@@ -67,7 +67,19 @@
          * @return          {Array}
          */
         calculate: function (target) {
-            return D._reduce(D._collect(target));
+
+            var sequence, i;
+
+            if (target && Object.prototype.toString.call(target) === "[object Array]") {
+                sequence = [];
+                for (i = 0; i < target.length; i++) {
+                    Array.prototype.push.apply(sequence, D._collect(target[i]));
+                }
+            } else {
+                sequence = D._collect(target);
+            }
+
+            return D._reduce(sequence);
         }
     };
 

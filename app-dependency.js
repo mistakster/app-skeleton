@@ -1,4 +1,4 @@
-(function (window, undefined) {
+(function () {
 
     /**
      * Описание модуля
@@ -7,20 +7,58 @@
      *      requires: список модулей, которые должны быть загружены до него
      */
 
-    var dependencies = {};
+    var D = {
+        /**
+         * Список зарегистрированных модулей
+         */
+        _dependencies: {},
 
-    APP.namespace("Dependency", {
         /**
          * Добавляем список зависимостей модуля в приложение
          * @param module
          */
         add: function (module) {
             if (module && module.name) {
-                dependencies[module.name] = {
+                D._dependencies[module.name] = {
                     path: module.path || "",
                     requires: module.requires || []
                 };
             }
+        },
+
+        _collect: function (name) {
+            var UNSHIFT = Array.prototype.unshift,
+                module = D._dependencies[name],
+                sequence = [],
+                i;
+
+            if (module) {
+                sequence.push(module.path);
+                if (module.requires.length > 0) {
+                    for (i = module.requires.length; i--;) {
+                        UNSHIFT.apply(sequence, D._collect(module.requires[i]));
+                    }
+                }
+            }
+
+            return sequence;
+        },
+
+        _reduce: function (original) {
+            var reduced = [],
+                cache = {},
+                i,
+                path;
+
+            for (i = 0; i < original.length; i++) {
+                path = original[i];
+                if (!cache[path]) {
+                    cache[path] = true;
+                    reduced.push(path);
+                }
+            }
+
+            return reduced;
         },
 
         /**
@@ -29,52 +67,10 @@
          * @return          {Array}
          */
         calculate: function (target) {
-
-            var UNSHIFT = Array.prototype.unshift,
-                sequence;
-
-            function collect(name) {
-
-                var module = dependencies[name], sequence = [], i;
-
-                if (module) {
-                    sequence.push(module.path);
-                    if (module.requires.length > 0) {
-                        for (i = module.requires.length; i--;) {
-                            UNSHIFT.apply(sequence, collect(module.requires[i]));
-                        }
-                    }
-                }
-
-                return sequence;
-            }
-
-            function reduce(original) {
-                var reduced = [], cache = {}, i, path;
-
-                for (i = 0; i < original.length; i++) {
-                    path = original[i];
-                    if (!cache[path]) {
-                        cache[path] = true;
-                        reduced.push(path);
-                    }
-                }
-
-                return reduced;
-            }
-
-            sequence = collect(target);
-            sequence = reduce(sequence);
-
-            return sequence;
-        },
-
-        /**
-         * Получить полный список зависимостей
-         */
-        getDependencies: function () {
-            return dependencies;
+            return D._reduce(D._collect(target));
         }
-    });
+    };
 
-}(window));
+    APP.namespace("Dependency", D);
+
+}());

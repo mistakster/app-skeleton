@@ -28,7 +28,7 @@ test("dependecy list", function () {
         requires: ["m3", "m2"]
     });
 
-    deepEqual(D.getDependencies(), {
+    deepEqual(D._dependencies, {
         "m1": {
             "path": "/scripts/m1.js",
             "requires": []

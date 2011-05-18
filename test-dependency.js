@@ -100,7 +100,7 @@ test("dependecy duplicates", function () {
     deepEqual(D.calculate("m3"), [
         "/scripts/m1.js",
         "/scripts/m2.js",
-        "/scripts/m3.js",
+        "/scripts/m3.js"
     ]);
 
     deepEqual(D.calculate("m4"), [
@@ -150,6 +150,37 @@ test("dependecy for collection", function () {
         "/scripts/m1.js",
         "/scripts/m2.js",
         "/scripts/m4.js"
+    ]);
+
+});
+
+test("fake modules", function () {
+
+    var D = APP.Dependency;
+
+    D.add([{
+        name: "m1"
+    }, {
+        name: "m2",
+        path: "/scripts/m2.js",
+        requires: ["m1"]
+    }, {
+        name: "m3",
+        path: "/scripts/m3.js"
+    }, {
+        name: "m4",
+        path: "",
+        requires: ["m3", "m2"]
+    }]);
+
+    deepEqual(D.calculate(["m2", "m4"]), [
+        "/scripts/m2.js",
+        "/scripts/m3.js"
+    ]);
+
+    deepEqual(D.calculate(["m4", "m2"]), [
+        "/scripts/m3.js",
+        "/scripts/m2.js"
     ]);
 
 });

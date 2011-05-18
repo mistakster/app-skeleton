@@ -65,7 +65,7 @@
 
             for (i = 0; i < original.length; i++) {
                 path = original[i];
-                if (!cache[path]) {
+                if (path && !cache[path]) {
                     cache[path] = true;
                     reduced.push(path);
                 }
@@ -80,13 +80,13 @@
          * @return          {Array}
          */
         calculate: function (target) {
-
-            var sequence, i;
+            var PUSH = Array.prototype.push,
+                sequence, i;
 
             if (target && Object.prototype.toString.call(target) === "[object Array]") {
                 sequence = [];
                 for (i = 0; i < target.length; i++) {
-                    Array.prototype.push.apply(sequence, D._collect(target[i]));
+                    PUSH.apply(sequence, D._collect(target[i]));
                 }
             } else {
                 sequence = D._collect(target);

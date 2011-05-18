@@ -13,9 +13,41 @@
         return receiver;
     }
 
-    function isObject(obj) {
-        return obj && Object.prototype.toString.call(obj) === "[object Object]";
-    }
+    app.Lang = (function () {
+
+        var TYPES = {
+                'undefined': 'undefined',
+                'number': 'number',
+                'boolean': 'boolean',
+                'string': 'string',
+                '[object Function]': 'function',
+                '[object RegExp]': 'regexp',
+                '[object Array]': 'array',
+                '[object Date]': 'date',
+                '[object Error]': 'error'
+            },
+
+            TOSTRING  = Object.prototype.toString,
+
+            L = {
+                type: function (o) {
+                    return TYPES[typeof o] || TYPES[TOSTRING.call(o)] || (o ? 'object' : 'null');
+                },
+                isFunction: function(o) {
+                    return L.type(o) === 'function';
+                },
+                isObject: function (o) {
+                    var t = typeof o;
+                    return o && (t === 'object' || (t === 'function' || L.isFunction(o))) || false;
+                },
+                isArray: function (o) {
+                    return L.type(o) === 'array';
+                }
+            };
+
+        return L;
+    })();
+
 
     /**
      * Get or create namespace for module
@@ -31,7 +63,7 @@
 
         for (i = (ns[0] === NS) ? 1 : 0; i < ns.length; i++) {
             part = obj[ns[i]] || {};
-            obj = obj[ns[i]] = i === ns.length - 1 && isObject(origin) ?
+            obj = obj[ns[i]] = i === ns.length - 1 && app.Lang.isObject(origin) ?
                     extend(origin, part) : part;
         }
 

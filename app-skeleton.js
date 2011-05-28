@@ -63,8 +63,7 @@
 
         for (i = (ns[0] === NS) ? 1 : 0; i < ns.length; i++) {
             part = obj[ns[i]] || {};
-            obj = obj[ns[i]] = i === ns.length - 1 && app.Lang.isObject(origin) ?
-                    extend(origin, part) : part;
+            obj = obj[ns[i]] = i === ns.length - 1 && origin ? extend(origin, part) : part;
         }
 
         return obj;

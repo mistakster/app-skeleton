@@ -3,13 +3,19 @@
     var NS = "APP",
         app = window[NS] = window[NS] || {};
 
-
     function extend(receiver, sender) {
-        for (var prop in sender) {
-            if (sender[prop] != undefined && receiver[prop] == undefined) {
+        var prop;
+
+        function isNull(value) {
+            return value === undefined || value === null;
+        }
+
+        for (prop in sender) {
+            if (!isNull(sender[prop]) && isNull(receiver[prop])) {
                 receiver[prop] = sender[prop];
             }
         }
+
         return receiver;
     }
 

@@ -1,9 +1,10 @@
 (function (window, undefined) {
 
-    var NS = "APP",
-        app = window[NS] = window[NS] || {};
+    var NS = "App",
+        app = window[NS] = window[NS] || {},
+        defaults = {};
 
-    function extend(receiver, sender) {
+    function mix(receiver, sender) {
         var prop;
 
         function isNull(value) {
@@ -19,60 +20,42 @@
         return receiver;
     }
 
-    app.Lang = (function () {
+    function namespace(ns, origin, root) {
+        var i, obj = root || window[NS], part;
 
-        var TYPES = {
-                'undefined': 'undefined',
-                'number': 'number',
-                'boolean': 'boolean',
-                'string': 'string',
-                '[object Function]': 'function',
-                '[object RegExp]': 'regexp',
-                '[object Array]': 'array',
-                '[object Date]': 'date',
-                '[object Error]': 'error'
-            },
+        if (ns) {
+            ns = ns.split(".");
+            for (i = (ns[0] === NS) ? 1 : 0; i < ns.length; i++) {
+                part = obj[ns[i]] || {};
+                obj = obj[ns[i]] = i === ns.length - 1 && origin ? mix(origin, part) : part;
+            }
+        }
 
-            TOSTRING  = Object.prototype.toString,
-
-            L = {
-                type: function (o) {
-                    return TYPES[typeof o] || TYPES[TOSTRING.call(o)] || (o ? 'object' : 'null');
-                },
-                isFunction: function(o) {
-                    return L.type(o) === 'function';
-                },
-                isObject: function (o) {
-                    var t = typeof o;
-                    return o && (t === 'object' || (t === 'function' || L.isFunction(o))) || false;
-                },
-                isArray: function (o) {
-                    return L.type(o) === 'array';
-                }
-            };
-
-        return L;
-    })();
+        return obj;
+    }
 
 
     /**
      * Get or create namespace for module
      *
-     * @param   ns          {String}    namespace
+     * @param   ns          {String}
      * @param   origin      {Object}    initial object (optional)
      * @return              {Object}
      */
     app.namespace = function (ns, origin) {
-        var i, obj = window[NS], part;
+        return namespace(ns, origin);
+    };
 
-        ns = ns.split(".");
 
-        for (i = (ns[0] === NS) ? 1 : 0; i < ns.length; i++) {
-            part = obj[ns[i]] || {};
-            obj = obj[ns[i]] = i === ns.length - 1 && origin ? extend(origin, part) : part;
-        }
-
-        return obj;
+    /**
+     * Get or set module defaults
+     *
+     * @param   ns          {String}
+     * @param   obj         {Object}    default values for module (optional)
+     * @return              {Object}
+     */
+    app.defaults = function (ns, obj) {
+        return namespace(ns, obj, defaults);
     };
 
 

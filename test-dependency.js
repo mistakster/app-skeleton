@@ -2,7 +2,7 @@ module("app-dependency");
 
 test("dependecy list", function () {
 
-    var D = APP.Dependency;
+    var D = App.Dependency;
 
     D.add({
         name: "m1",
@@ -78,7 +78,7 @@ test("dependecy list", function () {
 
 test("dependecy duplicates", function () {
 
-    var D = APP.Dependency;
+    var D = App.Dependency;
 
     D.add([{
         name: "m1",
@@ -114,7 +114,7 @@ test("dependecy duplicates", function () {
 
 test("dependecy for collection", function () {
 
-    var D = APP.Dependency;
+    var D = App.Dependency;
 
     D.add([{
         name: "m1",
@@ -156,7 +156,7 @@ test("dependecy for collection", function () {
 
 test("fake modules", function () {
 
-    var D = APP.Dependency;
+    var D = App.Dependency;
 
     D.add([{
         name: "m1"

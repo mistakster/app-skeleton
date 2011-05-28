@@ -30,7 +30,7 @@
 
             var i;
 
-            if (APP.Lang.isArray(module)) {
+            if (App.Lang.isArray(module)) {
                 for (i = module.length; i--;) {
                     register(module[i]);
                 }
@@ -96,6 +96,6 @@
         }
     };
 
-    APP.namespace("Dependency", D);
+    App.namespace("Dependency", D);
 
 }());

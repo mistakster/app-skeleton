@@ -103,3 +103,40 @@ test("partial extend", function () {
     });
 
 });
+
+
+test("defaults", function () {
+
+    App.defaults("Search", {
+        url: "/search/"
+    });
+
+    App.defaults("App.Search", {
+        url: "/search/new",
+        params: [1, 2, 3]
+    });
+
+    deepEqual(App.defaults("Search"), {
+        url: "/search/new",
+        params: [1, 2, 3]
+    });
+
+
+    App.defaults("App.Module", {
+        url: "/module/2",
+        param1: true,
+        param2: false
+    });
+
+    App.defaults("Module", {
+        url: "/module/1"
+    });
+
+    deepEqual(App.defaults("Module"), {
+        url: "/module/1",
+        param1: true,
+        param2: false
+    });
+
+
+});

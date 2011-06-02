@@ -3,39 +3,36 @@
  */
 (function () {
 
-    var COMPLETE_HANDLER = "complete",
-        resources = [],
-        bootstraped = false;
+    var loadQueue = [],
+        bootstraped = false,
+        _loader = (function (L) {
+            return L && L.load;
+        }(window['Modernizr'] || window['yepnope']));
 
-    function iterate() {
-        var needs;
-        if (resources.length > 0) {
-            needs = resources.shift();
-            after(needs, COMPLETE_HANDLER, iterate);
+    function isArray(obj) {
+        return Object.prototype.toString.apply(obj) === "[object Array]";
+    }
+
+    function makeArray(obj) {
+        return isArray(obj) ? obj : [obj];
+    }
+
+    App.bootstrap = function (needs, loader) {
+        Array.prototype.unshift.apply(loadQueue, makeArray(needs));
+        loader = loader || _loader;
+        if (loader) {
+            loader(loadQueue);
+            loadQueue = [];
+            bootstraped = true;
         }
-    }
-
-    function after(obj, method, advice) {
-        var pointcut = obj[method];
-        obj[method] = function () {
-            if (pointcut) {
-                pointcut.apply(this, arguments);
-            }
-            advice.apply(this);
-        };
-    }
-
-    App.bootstrap = function (needs) {
-        after(needs, COMPLETE_HANDLER, iterate);
-        Modernizr.load(needs);
-        bootstraped = true;
     };
 
-    App.load = function (needs) {
-        if (bootstraped) {
-
+    App.load = function (needs, loader) {
+        loader = loader || _loader;
+        if (bootstraped && loader) {
+            loader(needs);
         } else {
-            resources.push(needs);
+            Array.prototype.push.apply(loadQueue, makeArray(needs));
         }
     };
 

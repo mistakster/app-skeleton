@@ -58,19 +58,4 @@
         return namespace(ns, obj, defaults);
     };
 
-
-    /**
-     * Create module from object
-     *
-     * Based on Douglas Crockford's work "Prototypal Inheritance in JavaScript"
-     * http://javascript.crockford.com/prototypal.html
-     *
-     * @param origin        {Object}    initial object
-     */
-    app.module = function (origin) {
-        var F = function () {};
-        F.prototype = origin;
-        return new F();
-    };
-
 }(window));

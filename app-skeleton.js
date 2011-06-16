@@ -4,8 +4,12 @@
         app = window[NS] = window[NS] || {};
 
 
-    function isVoid(value) {
-        return value === undefined || value === null;
+    function isVoid(obj) {
+        return obj === undefined || obj === null;
+    }
+
+    function isFunction(obj) {
+        return Object.prototype.toString.apply(obj) === "[object Function]";
     }
 
     function isArray(obj) {
@@ -164,13 +168,13 @@
 
         var loadQueue = [],
             bootstraped = false,
-            _loader = (function (L) {
-                return L && L.load;
-            }(window['Modernizr'] || window['yepnope']));
+            loaderFn = (function (L) {
+                    return L && L.load;
+                }(window['Modernizr'] || window['yepnope']));
 
         App.bootstrap = function (needs, loader) {
             Array.prototype.unshift.apply(loadQueue, makeArray(needs));
-            loader = loader || _loader;
+            loader = loader || loaderFn;
             if (loader) {
                 loader(loadQueue);
                 loadQueue = [];
@@ -179,7 +183,15 @@
         };
 
         App.load = function (needs, loader) {
-            loader = loader || _loader;
+            loader = loader || loaderFn;
+
+            if (isFunction(needs)) {
+                needs = {
+                    load: [],
+                    complete: needs
+                }
+            }
+
             if (bootstraped && loader) {
                 loader(needs);
             } else {

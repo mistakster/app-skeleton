@@ -166,36 +166,40 @@
     // Modernizr.load wrapper
     (function () {
 
-        var loadQueue = [],
-            bootstraped = false,
-            loaderFn = (function (L) {
+        var attributes = {
+            queue: [],
+            bootstraped: false,
+            loader: (function (L) {
                     return L && L.load;
-                }(window['Modernizr'] || window['yepnope']));
+                }(window['Modernizr'] || window['yepnope']))
+        };
 
-        App.bootstrap = function (needs, loader) {
-            Array.prototype.unshift.apply(loadQueue, makeArray(needs));
-            loader = loader || loaderFn;
-            if (loader) {
-                loader(loadQueue);
-                loadQueue = [];
-                bootstraped = true;
+        function getAttrs(mock) {
+            return mock ? mix(mock || {}, attributes) : attributes;
+        }
+
+        App.bootstrap = function (needs, mock) {
+            var o = getAttrs(mock);
+            Array.prototype.unshift.apply(o.queue, makeArray(needs));
+            if (o.loader) {
+                o.loader(o.queue);
+                o.queue = [];
+                o.bootstraped = true;
             }
         };
 
-        App.load = function (needs, loader) {
-            loader = loader || loaderFn;
-
+        App.load = function (needs, mock) {
+            var o = getAttrs(mock);
             if (isFunction(needs)) {
                 needs = {
                     load: [],
                     complete: needs
                 }
             }
-
-            if (bootstraped && loader) {
-                loader(needs);
+            if (o.bootstraped && o.loader) {
+                o.loader(needs);
             } else {
-                Array.prototype.push.apply(loadQueue, makeArray(needs));
+                Array.prototype.push.apply(o.queue, makeArray(needs));
             }
         };
 

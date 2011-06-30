@@ -178,7 +178,7 @@
             return mock ? mix(mock || {}, attributes) : attributes;
         }
 
-        App.bootstrap = function (needs, mock) {
+        app.bootstrap = function (needs, mock) {
             var o = getAttrs(mock);
             Array.prototype.unshift.apply(o.queue, makeArray(needs));
             if (o.loader) {
@@ -188,7 +188,7 @@
             }
         };
 
-        App.load = function (needs, mock) {
+        app.load = function (needs, mock) {
             var o = getAttrs(mock);
             if (isFunction(needs)) {
                 needs = {

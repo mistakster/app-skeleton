@@ -167,13 +167,14 @@
     // Modernizr.load wrapper
     (function () {
 
-        var attributes = {
-            queue: [],
-            bootstraped: false,
-            loader: (function (L) {
-                    return L && L.load;
-                }(window['Modernizr'] || window['yepnope']))
-        };
+        var MODERNIZR = "Modernizr",
+            YEPNOPE = "yepnope",
+
+            attributes = {
+                queue: [],
+                bootstraped: false,
+                loader: window[MODERNIZR] && window[MODERNIZR].load || window[YEPNOPE]
+            };
 
         function getAttrs(mock) {
             return mock ? mix(mock || {}, attributes) : attributes;
@@ -188,7 +189,7 @@
             var o = getAttrs(mock);
             Array.prototype.unshift.apply(o.queue, makeArray(needs));
             if (o.loader) {
-                o.loader(o.queue);
+                o.loader.call(window, o.queue);
                 o.queue = [];
                 o.bootstraped = true;
             }
@@ -208,7 +209,7 @@
                 }
             }
             if (o.bootstraped && o.loader) {
-                o.loader(needs);
+                o.loader.call(window, needs);
             } else {
                 Array.prototype.push.apply(o.queue, makeArray(needs));
             }

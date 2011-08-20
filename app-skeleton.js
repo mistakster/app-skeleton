@@ -1,3 +1,8 @@
+/**
+ * Application skeleton
+ * @author  Vladimir Kuznetsov
+ * @url     https://github.com/mistakster/app-skeleton
+ */
 (function (window, undefined) {
 
     var NS = "App",

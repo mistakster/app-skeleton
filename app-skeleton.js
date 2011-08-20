@@ -121,6 +121,7 @@
          * Register the new module in application
          *
          * @param module    {Object|Array}  description of one or several modules
+         * @return          {Object}        module storage object
          */
         app.register = function (module) {
             var i, m;
@@ -146,7 +147,7 @@
          * Calculate the list of dependences for the specified module
          *
          * @param target    {String|Array}  one or several target units
-         * @param keep      {Boolean}       don't mark used modules
+         * @param keep      {Boolean}       don't mark used modules (optional)
          * @return          {Array}         list of path values for loading
          */
         app.calculate = function (target, keep) {
@@ -178,6 +179,11 @@
             return mock ? mix(mock || {}, attributes) : attributes;
         }
 
+        /**
+         * Bootstrap resources
+         * @param needs     {Object}    resource specs
+         * @param mock      {Object}    private external storage (optional, for testing only)
+         */
         app.bootstrap = function (needs, mock) {
             var o = getAttrs(mock);
             Array.prototype.unshift.apply(o.queue, makeArray(needs));
@@ -188,6 +194,11 @@
             }
         };
 
+        /**
+         * Load resources
+         * @param needs     {Object}    resource specs
+         * @param mock      {Object}    private external storage (optional, for testing only)
+         */
         app.load = function (needs, mock) {
             var o = getAttrs(mock);
             if (isFunction(needs)) {

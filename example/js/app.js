@@ -31,7 +31,7 @@
     // стартуем загрузку базовых скриптов, например, jQuery
     App.bootstrap({
         load: [
-            "https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"
+            "http://code.jquery.com/jquery-1.7.1.min.js"
         ],
         complete: function () {
             // в этом месте уже можно декорировать страницу

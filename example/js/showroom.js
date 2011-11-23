@@ -10,9 +10,9 @@
     App.namespace("App.Showroom", {
 
         init: function (tags) {
-
+			// корневой элемент
             $('<ul class="showroom"></ul>').appendTo("body");
-
+			// загрузка фотографий
             App.Showroom.getPhotos(tags);
         },
 
@@ -31,8 +31,7 @@
                 type: "jsonp"
             });
 
-            xhr.success(function (data) {
-
+            xhr.done(function (data) {
                 // конструируем адрес картинки
                 function createImageUrl(photo) {
                     return 'http://farm' + photo.farm + '.static.flickr.com/' + photo.server + '/' +

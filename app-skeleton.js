@@ -3,14 +3,17 @@
  * @author  Vladimir Kuznetsov
  * @url     https://github.com/mistakster/app-skeleton
  */
-(function (window, undefined) {
+
+/* jslint unparam: true, sloppy: true, forin: true, maxerr: 50, indent: 4 */
+
+(function (window) {
 
     var NS = "App",
         app = window[NS] = window[NS] || {};
 
 
     function isVoid(obj) {
-        return obj === undefined || obj === null;
+        return typeof obj === "undefined" || obj === null;
     }
 
     function isFunction(obj) {
@@ -47,7 +50,7 @@
 
             if (ns) {
                 ns = ns.split(".");
-                for (i = (ns[0] === NS) ? 1 : 0; i < ns.length; i++) {
+                for (i = (ns[0] === NS) ? 1 : 0; i < ns.length; i += 1) {
                     part = obj[ns[i]] || {};
                     obj = obj[ns[i]] = i === ns.length - 1 && origin ? mix(origin, part) : part;
                 }
@@ -90,14 +93,15 @@
         function collect(name) {
             var UNSHIFT = Array.prototype.unshift,
                 module = storage[name],
-                sequence = [], i;
+                sequence = [],
+                i;
 
             if (name && module) {
                 if (module.path && !module.skip) {
                     sequence.push(name);
                 }
                 if (module.requires.length > 0) {
-                    for (i = module.requires.length; i--;) {
+                    for (i = module.requires.length - 1; i >= 0; i -= 1) {
                         UNSHIFT.apply(sequence, collect(module.requires[i]));
                     }
                 }
@@ -109,7 +113,7 @@
         function reduce(original, skip) {
             var obj, i, name, reduced = [], cache = {};
 
-            for (i = 0; i < original.length; i++) {
+            for (i = 0; i < original.length; i += 1) {
                 name = original[i];
                 if (name && !cache[name]) {
                     obj = storage[name];
@@ -132,7 +136,7 @@
             var i, m;
 
             if (module) {
-                for (module = makeArray(module), i = module.length; i--;) {
+                for (module = makeArray(module), i = module.length - 1; i >= 0; i -= 1) {
                     m = module[i];
                     if (m.name) {
                         storage[m.name] = {
@@ -158,7 +162,7 @@
         app.calculate = function (target, keep) {
             var i, sequence = [], PUSH = Array.prototype.push;
 
-            for (target = makeArray(target), i = 0; i < target.length; i++) {
+            for (target = makeArray(target), i = 0; i < target.length; i += 1) {
                 PUSH.apply(sequence, collect(target[i]));
             }
 
@@ -177,22 +181,19 @@
             attributes = {
                 queue: [],
                 bootstraped: false,
-                loader: window[MODERNIZR] && window[MODERNIZR].load || window[YEPNOPE]
+                loader: (window[MODERNIZR] && window[MODERNIZR].load) || window[YEPNOPE]
             };
 
-		/**
-		 * Extract mock object from arguments
-		 * @param _needs	{Object}	unused
-		 * @param mock		{Object}	private external storage
-		 */
-        function getAttrs(_needs, mock) {
+        /**
+         * Extract mock object from arguments
+         */
+        function getAttrs(needs, mock) {
             return mock ? mix(mock || {}, attributes) : attributes;
         }
 
         /**
          * Bootstrap resources
-		 * Optional second paramerts is a private external storage (for testing purposes only)
-		 *
+         * Optional second paramerts is a private external storage (for testing purposes only)
          * @param needs     {Object}    resource specs
          */
         app.bootstrap = function (needs) {
@@ -207,17 +208,16 @@
 
         /**
          * Load resources
-		 * Optional second paramerts is a private external storage (for testing purposes only)
-		 *
+         * Optional second paramerts is a private external storage (for testing purposes only)
          * @param needs     {Object}    resource specs
          */
         app.load = function (needs) {
-			var o = getAttrs.apply(this, arguments);
+            var o = getAttrs.apply(this, arguments);
             if (isFunction(needs)) {
                 needs = {
                     load: [],
                     complete: needs
-                }
+                };
             }
             if (o.bootstraped && o.loader) {
                 o.loader.call(window, needs);
@@ -228,4 +228,4 @@
 
     }());
 
-}(window));
+}(this));

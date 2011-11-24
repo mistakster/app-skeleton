@@ -174,24 +174,29 @@
 
         var MODERNIZR = "Modernizr",
             YEPNOPE = "yepnope",
-
             attributes = {
                 queue: [],
                 bootstraped: false,
                 loader: window[MODERNIZR] && window[MODERNIZR].load || window[YEPNOPE]
             };
 
-        function getAttrs(mock) {
+		/**
+		 * Extract mock object from arguments
+		 * @param _needs	{Object}	unused
+		 * @param mock		{Object}	private external storage
+		 */
+        function getAttrs(_needs, mock) {
             return mock ? mix(mock || {}, attributes) : attributes;
         }
 
         /**
          * Bootstrap resources
+		 * Optional second paramerts is a private external storage (for testing purposes only)
+		 *
          * @param needs     {Object}    resource specs
-         * @param mock      {Object}    private external storage (optional, for testing only)
          */
-        app.bootstrap = function (needs, mock) {
-            var o = getAttrs(mock);
+        app.bootstrap = function (needs) {
+            var o = getAttrs.apply(this, arguments);
             Array.prototype.unshift.apply(o.queue, makeArray(needs));
             if (o.loader) {
                 o.loader.call(window, o.queue);
@@ -202,11 +207,12 @@
 
         /**
          * Load resources
+		 * Optional second paramerts is a private external storage (for testing purposes only)
+		 *
          * @param needs     {Object}    resource specs
-         * @param mock      {Object}    private external storage (optional, for testing only)
          */
-        app.load = function (needs, mock) {
-            var o = getAttrs(mock);
+        app.load = function (needs) {
+			var o = getAttrs.apply(this, arguments);
             if (isFunction(needs)) {
                 needs = {
                     load: [],

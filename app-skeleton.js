@@ -1,15 +1,15 @@
 /**
  * Application skeleton
+ * @version 1.0.1
  * @author  Vladimir Kuznetsov
- * @url     https://github.com/mistakster/app-skeleton
+ * @see     <a href="https://github.com/mistakster/app-skeleton">Application skeleton</a>
  */
 
 /* jslint unparam: true, sloppy: true, forin: true, maxerr: 50, indent: 4 */
 
-(function (window) {
+(function (window, NS) {
 
-    var NS = "App",
-        app = window[NS] = window[NS] || {};
+    var app = window[NS] = window[NS] || {};
 
 
     function isVoid(obj) {
@@ -46,17 +46,17 @@
         var defaults = {};
 
         function getContext(ns, origin, root) {
-            var i, part, obj = root || window[NS];
+            var i, part;
 
             if (ns) {
                 ns = ns.split(".");
                 for (i = (ns[0] === NS) ? 1 : 0; i < ns.length; i += 1) {
-                    part = obj[ns[i]] || {};
-                    obj = obj[ns[i]] = i === ns.length - 1 && origin ? mix(origin, part) : part;
+                    part = root[ns[i]] || {};
+                    root = root[ns[i]] = i === ns.length - 1 && origin ? mix(origin, part) : part;
                 }
             }
 
-            return obj;
+            return root;
         }
 
         /**
@@ -67,7 +67,7 @@
          * @return              {Object}
          */
         app.namespace = function (namespace, origin) {
-            return getContext(namespace, origin);
+            return getContext(namespace, origin, window[NS]);
         };
 
 
@@ -228,4 +228,4 @@
 
     }());
 
-}(this));
+}(this, "App"));

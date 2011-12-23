@@ -9,7 +9,10 @@
 
 (function (window, NS) {
 
-    var app = window[NS] = window[NS] || {};
+    var app = window[NS] = window[NS] || {},
+		// shortcuts
+		PUSH = Array.prototype.push,
+		UNSHIFT = Array.prototype.unshift;
 
 
     function isVoid(obj) {
@@ -91,10 +94,7 @@
         var storage = {};
 
         function collect(name) {
-            var UNSHIFT = Array.prototype.unshift,
-                module = storage[name],
-                sequence = [],
-                i;
+            var module = storage[name], sequence = [], i;
 
             if (name && module) {
                 if (module.path && !module.skip) {
@@ -116,8 +116,10 @@
             for (i = 0; i < original.length; i += 1) {
                 name = original[i];
                 if (name && !cache[name]) {
+					cache[name] = true;
                     obj = storage[name];
-                    cache[name] = reduced.push(obj.path);
+					// массив адресов добавляем по очереди
+					PUSH.apply(reduced, makeArray(obj.path));
                     obj.skip = obj.skip || skip;
                 }
             }
@@ -160,7 +162,7 @@
          * @return          {Array}         list of path values for loading
          */
         app.calculate = function (target, keep) {
-            var i, sequence = [], PUSH = Array.prototype.push;
+            var i, sequence = [];
 
             for (target = makeArray(target), i = 0; i < target.length; i += 1) {
                 PUSH.apply(sequence, collect(target[i]));
@@ -198,7 +200,7 @@
          */
         app.bootstrap = function (needs) {
             var o = getAttrs.apply(this, arguments);
-            Array.prototype.unshift.apply(o.queue, makeArray(needs));
+            UNSHIFT.apply(o.queue, makeArray(needs));
             if (o.loader) {
                 o.loader.call(window, o.queue);
                 o.queue = [];

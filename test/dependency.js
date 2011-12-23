@@ -342,3 +342,35 @@ test("complex", function () {
     deepEqual(App.calculate("m6", true), []);
 
 });
+
+test("many paths", function () {
+
+    beforeTest();
+
+    App.register([{
+        name: "m5",
+        path: ["/css/m5.css", "/scripts/m5a.js", "/scripts/m5b.js"],
+        requires: ["m1"]
+    }, {
+        name: "m6",
+        path: "/scripts/m6.js",
+        requires: ["m3", "m5"]
+    }]);
+
+    deepEqual(App.calculate("m5", true), [
+        "/scripts/m1.js",
+        "/css/m5.css",
+        "/scripts/m5a.js",
+        "/scripts/m5b.js"
+    ]);
+
+    deepEqual(App.calculate("m6"), [
+        "/scripts/m1.js",
+        "/scripts/m3.js",
+        "/css/m5.css",
+        "/scripts/m5a.js",
+        "/scripts/m5b.js",
+        "/scripts/m6.js"
+    ]);
+
+});

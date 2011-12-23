@@ -10,9 +10,10 @@
 (function (window, NS) {
 
     var app = window[NS] = window[NS] || {},
-		// shortcuts
-		PUSH = Array.prototype.push,
-		UNSHIFT = Array.prototype.unshift;
+        // shortcuts
+        PUSH = Array.prototype.push,
+        UNSHIFT = Array.prototype.unshift,
+        TOSTRING = Object.prototype.toString;
 
 
     function isVoid(obj) {
@@ -20,11 +21,15 @@
     }
 
     function isFunction(obj) {
-        return Object.prototype.toString.apply(obj) === "[object Function]";
+        return TOSTRING.apply(obj) === "[object Function]";
+    }
+
+    function isObject(obj) {
+        return obj && TOSTRING.apply(obj) === "[object Object]";
     }
 
     function isArray(obj) {
-        return Object.prototype.toString.apply(obj) === "[object Array]";
+        return TOSTRING.apply(obj) === "[object Array]";
     }
 
     function makeArray(obj) {
@@ -116,10 +121,10 @@
             for (i = 0; i < original.length; i += 1) {
                 name = original[i];
                 if (name && !cache[name]) {
-					cache[name] = true;
+                    cache[name] = true;
                     obj = storage[name];
-					// массив адресов добавляем по очереди
-					PUSH.apply(reduced, makeArray(obj.path));
+                    // add an array of paths to the queue
+                    PUSH.apply(reduced, makeArray(obj.path));
                     obj.skip = obj.skip || skip;
                 }
             }
@@ -178,13 +183,11 @@
     // Modernizr.load wrapper
     (function () {
 
-        var MODERNIZR = "Modernizr",
-            YEPNOPE = "yepnope",
-            attributes = {
-                queue: [],
-                bootstraped: false,
-                loader: (window[MODERNIZR] && window[MODERNIZR].load) || window[YEPNOPE]
-            };
+        var MODERNIZR = "Modernizr", YEPNOPE = "yepnope", attributes = {
+            queue: [],
+            bootstraped: false,
+            loader: (window[MODERNIZR] && window[MODERNIZR].load) || window[YEPNOPE]
+        };
 
         /**
          * Extract mock object from arguments

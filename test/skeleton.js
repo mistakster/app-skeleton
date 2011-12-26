@@ -138,5 +138,99 @@ test("defaults", function () {
         param2: false
     });
 
+});
 
+
+test("safe value", function () {
+
+    var obj = {
+        field_string: "hello, world!",
+        field_true: true,
+        field_false: false,
+        field_zero: 0,
+        field_one: 1,
+        field_object: {
+            "a": "value A",
+            "b": "value B"
+        },
+        sub_fields: {
+            field_string: "hello, world!",
+            field_true: true,
+            field_false: false,
+            field_zero: 0,
+            field_one: 1,
+            field_object: {
+                "nested_field": "nested_value"
+            }
+        }
+    };
+
+    // first level fields
+    equal(App.getValue(obj, "field_string"), "hello, world!", "string");
+    equal(App.getValue(obj, "field_string", "abcd"), "hello, world!", "string with stub value");
+
+    equal(App.getValue(obj, "field_true"), true, "boolean true");
+    equal(App.getValue(obj, "field_true", "abcd"), true, "boolean true with stub value");
+
+    equal(App.getValue(obj, "field_false"), false, "boolean false");
+    equal(App.getValue(obj, "field_false", "abcd"), false, "boolean false with stub value");
+
+    equal(App.getValue(obj, "field_zero"), 0, "0");
+    equal(App.getValue(obj, "field_zero", "abcd"), 0, "0 with stub");
+
+    equal(App.getValue(obj, "field_one"), 1, "1");
+    equal(App.getValue(obj, "field_one", "abcd"), 1, "1 with stub");
+
+    deepEqual(App.getValue(obj, "field_object"), {
+        "a": "value A",
+        "b": "value B"
+    }, "object");
+
+    deepEqual(App.getValue(obj, "field_object", "abcd"), {
+        "a": "value A",
+        "b": "value B"
+    }, "object with stub");
+
+    // second level fields
+    equal(App.getValue(obj, "sub_fields.field_string"), "hello, world!", "string");
+    equal(App.getValue(obj, "sub_fields.field_string", "abcd"), "hello, world!", "string with stub value");
+
+    equal(App.getValue(obj, "sub_fields.field_true"), true, "boolean true");
+    equal(App.getValue(obj, "sub_fields.field_true", "abcd"), true, "boolean true with stub value");
+
+    equal(App.getValue(obj, "sub_fields.field_false"), false, "boolean false");
+    equal(App.getValue(obj, "sub_fields.field_false", "abcd"), false, "boolean false with stub value");
+
+    equal(App.getValue(obj, "sub_fields.field_zero"), 0, "0");
+    equal(App.getValue(obj, "sub_fields.field_zero", "abcd"), 0, "0 with stub");
+
+    equal(App.getValue(obj, "sub_fields.field_one"), 1, "1");
+    equal(App.getValue(obj, "sub_fields.field_one", "abcd"), 1, "1 with stub");
+
+    deepEqual(App.getValue(obj, "sub_fields.field_object"), {
+        "nested_field": "nested_value"
+    }, "object");
+
+    deepEqual(App.getValue(obj, "sub_fields.field_object", "abcd"), {
+        "nested_field": "nested_value"
+    }, "object with stub");
+
+    // nullable
+    equal(App.getValue({a: {b: null}}, "a.b"), null, "nullable");
+
+    // unknown fields
+    equal(App.getValue(obj, "unknown_field"), undefined, "unknown field");
+    equal(App.getValue(obj, "unknown_field", "abcd"), "abcd", "unknown field with stub value");
+
+    equal(App.getValue(obj, "sub_fields.unknown_field"), undefined, "unknown field at 2 level");
+    equal(App.getValue(obj, "sub_fields.unknown_field", "abcd"), "abcd", "unknown field with stub value at 2 level");
+
+
+    // don't clobber base object with nested objects
+    App.getValue(obj, "level1.level2");
+    equal(App.getValue(obj, "level1"), undefined, "don't clobber base object with nested objects");
+
+
+    // wrong name
+    equal(App.getValue({a: "value A"}, "a.b.c", "stub"), "stub", "wrong type in hierarhy");
 });

@@ -1,6 +1,6 @@
 /**
  * Application skeleton
- * @version 1.0.1
+ * @version 1.1.0
  * @author  Vladimir Kuznetsov
  * @see     <a href="https://github.com/mistakster/app-skeleton">Application skeleton</a>
  */
@@ -89,6 +89,27 @@
         app.defaults = function (namespace, obj) {
             return getContext(namespace, obj, defaults);
         };
+
+
+        /**
+         * Safe get value for specified property
+         *
+         * @param   obj     {Object}    source object
+         * @param   name    {String}    property name with dot delimiter
+         * @param   stub    {Object}    stub value for undefined property
+         */
+        app.getValue = function(obj, name, stub) {
+            var i, parts = name.split(".");
+            for (i = 0; i < parts.length; i += 1) {
+                if (isObject(obj) && obj.hasOwnProperty(parts[i])) {
+                    obj = obj[parts[i]];
+                } else {
+                    obj = stub;
+                    break;
+                }
+            }
+            return obj;
+        }
 
     }());
 

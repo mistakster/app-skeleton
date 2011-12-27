@@ -3,11 +3,8 @@
     // регистрируем компоненты и их зависимости
     App.register([{
         name: "showroom",
-        path: "js/showroom.js",
-        requires: ["showroom-css", "showroom-settings"]
-    }, {
-        name: "showroom-css",
-        path: "css/showroom.css"
+        path: ["css/showroom.css", "js/showroom.js"],
+        requires: ["showroom-settings"]
     }, {
         name: "showroom-settings",
         path: "js/showroom-settings.js"
@@ -21,7 +18,7 @@
             // инициализируем шоурум
             $(function () {
                 // достаем теги картинок из специального хранилища
-                var tags = App.defaults("App.Showroom").tags || "";
+                var tags = App.defaults("App.Showroom", "tags", "");
                 // рисуем галерею на странице
                 App.Showroom.init(tags);
             });
@@ -30,9 +27,7 @@
 
     // стартуем загрузку базовых скриптов, например, jQuery
     App.bootstrap({
-        load: [
-            "http://code.jquery.com/jquery-1.7.1.min.js"
-        ],
+        load: "http://code.jquery.com/jquery-1.7.1.min.js",
         complete: function () {
             // в этом месте уже можно декорировать страницу
             // например, добавим класс элементу html

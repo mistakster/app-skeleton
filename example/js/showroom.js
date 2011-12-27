@@ -21,7 +21,7 @@
                 url: "http://api.flickr.com/services/rest/?jsoncallback=?",
                 data: {
                     // ключ приложения так же хранится отдельно от кода
-                    api_key: App.defaults("App.Showroom").flickrKey,
+                    api_key: App.defaults("App.Showroom", "flickrKey"),
                     content_type: 1,
                     format: "json",
                     method: "flickr.photos.search",
@@ -44,7 +44,7 @@
                     $.each(data.photos.photo, function (index) {
                         if (index < 10) {
                             eles.push('<li class="showroom-item">',
-                                    '<img class="photo" src="' + createImageUrl(this) + '" alt="' + this.title + '"/>',
+                                    '<img class="photo" data-source="' + createImageUrl(this) + '" alt="' + this.title + '" style="visibility: hidden;"/>',
                                 '</li>');
                         } else {
                             return false;
@@ -52,9 +52,42 @@
                     });
                 }
 
-                $("ul.showroom").append(eles.join(''));
+                $("ul.showroom").append(eles.join(''))
+                        .find("img").bindImageLoad(function () {
+                            // отслеживаем событие загрузки картинки
+                            // это нужно сделать до того как загрузка завершится
+                            $(this).css({"opacity": 0.01, "visibility": ""}).animate({"opacity": 1}, {
+                                complete: function () {
+                                    $(this).css("opacity", "");
+                                }
+                            });
+                        }).each(function () {
+                            // картинки были добавлены в документ с фиктивным атрибутом src
+                            // активируем загрузку, назначив правильный атрибут
+                            $(this).attr("src", $(this).data("source"));
+                        });
             });
         }
     });
 
 }());
+
+/**
+ * @see <a href="http://noteskeeper.ru/35/">Событие окончания загрузки картинки</a>
+ */
+(function ($) {
+    $.fn.bindImageLoad = function (callback) {
+        function isImageLoaded(img) {
+            return img.complete && typeof img.naturalWidth === "undefined" || img.naturalWidth !== 0;
+        }
+        return this.each(function () {
+            var ele = $(this);
+            if (ele.is("img") && $.isFunction(callback)) {
+                ele.one("load", callback);
+                if (isImageLoaded(this)) {
+                    ele.trigger("load");
+                }
+            }
+        });
+    };
+})(jQuery);

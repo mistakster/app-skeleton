@@ -98,7 +98,7 @@
          * @param   name    {String}    property name with dot delimiter
          * @param   stub    {Object}    stub value for undefined property
          */
-        app.getValue = function(obj, name, stub) {
+        app.getValue = function (obj, name, stub) {
             var i, parts = name.split(".");
             for (i = 0; i < parts.length; i += 1) {
                 if (isObject(obj) && obj.hasOwnProperty(parts[i])) {
@@ -109,7 +109,7 @@
                 }
             }
             return obj;
-        }
+        };
 
     }());
 

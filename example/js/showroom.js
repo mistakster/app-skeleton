@@ -46,13 +46,13 @@
                         img = $('<img class="photo" alt="' + title + '"/>');
 
                     if ($.ImageLoad) {
-                        img.imageload().on($.ImageLoad.imageready, function () {
+                        img.on($.ImageLoad.imageready, function () {
                             // отслеживаем событие загрузки картинки. это нужно сделать до того как загрузка завершится
                             $(this).css({"opacity": 0.01, "visibility": ""})
                                 .animate({"opacity": 1}, function () {
                                     $(this).css("opacity", "");
                                 });
-                        }).css("visibility", "hidden");
+                        }).imageload().css("visibility", "hidden");
                     }
 
                     img.appendTo(item.appendTo(root)).attr("src", url);

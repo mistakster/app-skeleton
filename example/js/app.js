@@ -20,7 +20,9 @@
                 // достаем теги картинок из специального хранилища
                 var tags = App.defaults("App.Showroom", "tags", "");
                 // рисуем галерею на странице
-                App.Showroom.init(tags);
+                App.Showroom.init(tags).on("loaded.showroom", function () {
+                    App.Splash.hide();
+                });
             });
         }
     });
@@ -32,7 +34,35 @@
             // в этом месте уже можно декорировать страницу
             // например, добавим класс элементу html
             $("html").addClass("jquery");
+            // покажем заставку
+            App.Splash.ready();
         }
     });
+
+
+    (function () {
+        var timer, start= +new Date();
+
+        App.namespace("App.Splash", {
+            // можно показать заставку, если прошло слишком много времени с момента загрузки
+            ready: function () {
+                var now = +new Date(),
+                    delta = 500 - (now - start);
+
+                $('<div class="intro hidden">Loading&hellip;</div>').appendTo("body");
+
+                timer = setTimeout(function () {
+                    $("div.intro").removeClass("hidden");
+                }, delta > 0 ? delta : 0);
+            },
+            // убрать заставку
+            hide: function () {
+                $("div.intro").remove();
+                if (timer) {
+                    clearTimeout(timer);
+                }
+            }
+        });
+    }());
 
 }());

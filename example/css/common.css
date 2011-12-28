@@ -1,0 +1,17 @@
+html {
+    margin: 0;
+    padding: 0;
+}
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+.hidden {
+    display: none;
+}
+.intro {
+    text-align: center;
+    font-weight: bold;
+}

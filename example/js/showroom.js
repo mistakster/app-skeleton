@@ -11,12 +11,14 @@
 
         init: function (tags) {
 			// корневой элемент
-            $('<ul class="showroom"></ul>').appendTo("body");
+            var root = $('<ul class="showroom"></ul>').appendTo("body");
 			// загрузка фотографий
-            App.Showroom.getPhotos(tags);
+            App.Showroom.getPhotos(tags, root);
+
+            return root;
         },
 
-        getPhotos: function (tags) {
+        getPhotos: function (tags, root) {
             var xhr = $.ajax({
                 url: "http://api.flickr.com/services/rest/?jsoncallback=?",
                 data: {
@@ -38,34 +40,37 @@
                         photo.id + '_' + photo.secret + '.jpg';
                 }
 
+                // загружаем фотографию
+                function createImage(url, title) {
+
+                    var item = $('<li class="showroom-item"></li>'),
+                        img = $('<img class="photo" alt="' + title + '" style="visibility: hidden;"/>');
+
+                    img.bindImageLoad(function () {
+                        // отслеживаем событие загрузки картинки
+                        // это нужно сделать до того как загрузка завершится
+                        $(this).css({"opacity": 0.01, "visibility": ""}).animate({"opacity": 1}, {
+                            complete: function () {
+                                $(this).css("opacity", "");
+                            }
+                        });
+                        // оповещаем контейнер о том, что картинка загружена
+                        root.trigger("loaded.showroom");
+                    });
+
+                    img.appendTo(item.appendTo(root)).attr("src", url);
+                }
+
                 var eles = [], i;
 
                 if (data.stat === "ok") {
                     $.each(data.photos.photo, function (index) {
-                        if (index < 10) {
-                            eles.push('<li class="showroom-item">',
-                                    '<img class="photo" data-source="' + createImageUrl(this) + '" alt="' + this.title + '" style="visibility: hidden;"/>',
-                                '</li>');
-                        } else {
+                        if (index >= 10) {
                             return false;
                         }
+                        createImage(createImageUrl(this), this.title);
                     });
                 }
-
-                $("ul.showroom").append(eles.join(''))
-                        .find("img").bindImageLoad(function () {
-                            // отслеживаем событие загрузки картинки
-                            // это нужно сделать до того как загрузка завершится
-                            $(this).css({"opacity": 0.01, "visibility": ""}).animate({"opacity": 1}, {
-                                complete: function () {
-                                    $(this).css("opacity", "");
-                                }
-                            });
-                        }).each(function () {
-                            // картинки были добавлены в документ с фиктивным атрибутом src
-                            // активируем загрузку, назначив правильный атрибут
-                            $(this).attr("src", $(this).data("source"));
-                        });
             });
         }
     });

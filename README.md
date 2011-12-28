@@ -54,7 +54,7 @@
 Эти методом можно пользоваться для безопасного получения значений ключей,
 которые могут отсутствовать по каким-либо причинам.
 
-    App.defaults("Text", {
+    App.defaults("App.Text", {
         error: {
             not_found: "Not found",
             connection_lost: "Connection lost"
@@ -64,11 +64,24 @@
         }
     }
 
-    App.defaults("Text", "error.not_found", "Not found");
-    App.defaults("Text", "error.unknown", "Unknown error");
+    var msg1 = App.defaults("Text", "error.not_found", "Not found");
+    var msg2 = App.defaults("Text", "error.unknown", "Unknown error");
 
 Первый ключ найден в хранилище и вернется значение, которое там определено.
 А второго ключа в хранилище нет. В этом случае будет использовано значение по умолчанию.
+
+Для однотипных действий в приложении можно сделать обертку для них.
+
+    App.namespace("App.Text", {
+        getError: function (key, stub) {
+            return App.defaults("Text.error", key, stub);
+        },
+        getNotice: function (key, stub) {
+            return App.defaults("Text.notice", key, stub);
+        }
+    });
+
+    var msg = App.Text.getError("not_found", "Not found");
 
 ## register()
 

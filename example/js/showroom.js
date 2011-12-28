@@ -10,9 +10,9 @@
     App.namespace("App.Showroom", {
 
         init: function (tags) {
-			// корневой элемент
+            // корневой элемент
             var root = $('<ul class="showroom"></ul>').appendTo("body");
-			// загрузка фотографий
+            // загрузка фотографий
             App.Showroom.getPhotos(tags, root);
 
             return root;
@@ -36,27 +36,24 @@
             xhr.done(function (data) {
                 // конструируем адрес картинки
                 function createImageUrl(photo) {
-                    return 'http://farm' + photo.farm + '.static.flickr.com/' + photo.server + '/' +
-                        photo.id + '_' + photo.secret + '.jpg';
+                    return 'http://farm' + photo.farm + '.static.flickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '.jpg';
                 }
 
                 // загружаем фотографию
                 function createImage(url, title) {
 
                     var item = $('<li class="showroom-item"></li>'),
-                        img = $('<img class="photo" alt="' + title + '" style="visibility: hidden;"/>');
+                        img = $('<img class="photo" alt="' + title + '"/>');
 
-                    img.bindImageLoad(function () {
-                        // отслеживаем событие загрузки картинки
-                        // это нужно сделать до того как загрузка завершится
-                        $(this).css({"opacity": 0.01, "visibility": ""}).animate({"opacity": 1}, {
-                            complete: function () {
-                                $(this).css("opacity", "");
-                            }
-                        });
-                        // оповещаем контейнер о том, что картинка загружена
-                        root.trigger("loaded.showroom");
-                    });
+                    if ($.ImageLoad) {
+                        img.imageload().on($.ImageLoad.imageready, function () {
+                            // отслеживаем событие загрузки картинки. это нужно сделать до того как загрузка завершится
+                            $(this).css({"opacity": 0.01, "visibility": ""})
+                                .animate({"opacity": 1}, function () {
+                                    $(this).css("opacity", "");
+                                });
+                        }).css("visibility", "hidden");
+                    }
 
                     img.appendTo(item.appendTo(root)).attr("src", url);
                 }
@@ -76,23 +73,3 @@
     });
 
 }());
-
-/**
- * @see <a href="http://noteskeeper.ru/35/">Событие окончания загрузки картинки</a>
- */
-(function ($) {
-    $.fn.bindImageLoad = function (callback) {
-        function isImageLoaded(img) {
-            return img.complete && typeof img.naturalWidth === "undefined" || img.naturalWidth !== 0;
-        }
-        return this.each(function () {
-            var ele = $(this);
-            if (ele.is("img") && $.isFunction(callback)) {
-                ele.one("load", callback);
-                if (isImageLoaded(this)) {
-                    ele.trigger("load");
-                }
-            }
-        });
-    };
-})(jQuery);

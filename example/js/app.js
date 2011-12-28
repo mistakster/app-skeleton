@@ -4,10 +4,13 @@
     App.register([{
         name: "showroom",
         path: ["css/showroom.css", "js/showroom.js"],
-        requires: ["showroom-settings"]
+        requires: ["jquery-imageload", "showroom-settings"]
     }, {
         name: "showroom-settings",
         path: "js/showroom-settings.js"
+    }, {
+        name: "jquery-imageload",
+        path: "js/libs/jquery.imageload.js"
     }]);
 
     // ставим компонент шоурума в очередь на загрузку.
@@ -20,9 +23,15 @@
                 // достаем теги картинок из специального хранилища
                 var tags = App.defaults("App.Showroom", "tags", "");
                 // рисуем галерею на странице
-                App.Showroom.init(tags).on("loaded.showroom", function () {
+                var sr = App.Showroom.init(tags);
+                // если есть плагин, отслеживающий загрузку картинок, то используем его
+                if ($.ImageLoad) {
+                    sr.on($.ImageLoad.imageready, function () {
+                        App.Splash.hide();
+                    });
+                } else {
                     App.Splash.hide();
-                });
+                }
             });
         }
     });

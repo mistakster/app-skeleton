@@ -107,6 +107,8 @@
 
         /**
          * Get or set module defaults
+         * The behavior of the method is determined by the second argument. If it is an object, then the method
+         * act like a setter and writes this object to the specified path. In this case the third argument doesn't matter.
          *
          * @param   namespace   {String}    named context in private space
          * @param   obj         {Object}    default values for module (optional, object) or subpath (string)

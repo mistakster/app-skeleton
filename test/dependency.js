@@ -34,6 +34,15 @@ function beforeTest() {
 }
 
 
+function extend(receiver, sender) {
+    for (var prop in sender) {
+        if (sender.hasOwnProperty(prop)) {
+            receiver[prop] = sender[prop];
+        }
+    }
+    return receiver;
+}
+
 
 test("register modules", function () {
 
@@ -83,7 +92,7 @@ test("register modules", function () {
     });
 });
 
-test("dependecy list 1", function () {
+test("dependency list 1", function () {
 
     beforeTest();
 
@@ -92,7 +101,7 @@ test("dependecy list 1", function () {
     ]);
 });
 
-test("dependecy list 2", function () {
+test("dependency list 2", function () {
 
     beforeTest();
 
@@ -101,7 +110,7 @@ test("dependecy list 2", function () {
     ]);
 });
 
-test("dependecy list 3", function () {
+test("dependency list 3", function () {
 
     beforeTest();
 
@@ -111,7 +120,7 @@ test("dependecy list 3", function () {
     ]);
 });
 
-test("dependecy list 4", function () {
+test("dependency list 4", function () {
 
     beforeTest();
 
@@ -123,7 +132,7 @@ test("dependecy list 4", function () {
     ]);
 });
 
-test("dependecy list 5", function () {
+test("dependency list 5", function () {
 
     beforeTest();
 
@@ -135,7 +144,7 @@ test("dependecy list 5", function () {
     ]);
 });
 
-test("dependecy duplicates 1", function () {
+test("dependency duplicates 1", function () {
 
     wipe();
 
@@ -164,7 +173,7 @@ test("dependecy duplicates 1", function () {
 
 });
 
-test("dependecy duplicates 2", function () {
+test("dependency duplicates 2", function () {
 
     wipe();
 
@@ -193,7 +202,7 @@ test("dependecy duplicates 2", function () {
     ]);
 });
 
-test("dependecy for collection 1", function () {
+test("dependency for collection 1", function () {
 
     wipe();
 
@@ -220,7 +229,7 @@ test("dependecy for collection 1", function () {
     ]);
 });
 
-test("dependecy for collection 2", function () {
+test("dependency for collection 2", function () {
 
     wipe();
 
@@ -248,7 +257,7 @@ test("dependecy for collection 2", function () {
     ]);
 });
 
-test("dependecy for collection 3", function () {
+test("dependency for collection 3", function () {
 
     wipe();
 
@@ -372,5 +381,139 @@ test("many paths", function () {
         "/scripts/m5b.js",
         "/scripts/m6.js"
     ]);
+
+});
+
+
+test("dependency with transform callback (pass-through mode)", function () {
+
+    wipe();
+
+    var transforms = [];
+
+    App.register([{
+        name: "m1",
+        path: "/scripts/m1.js",
+        requires: [],
+        skip: true
+    }, {
+        name: "m2",
+        path: "/scripts/m2.js",
+        requires: []
+    }, {
+        name: "m3",
+        requires: ["m1"]
+    }, {
+        name: "m4",
+        path: "/scripts/m4.js",
+        requires: ["m3", "m2"]
+    }], function (module, name, index) {
+        // transform callback
+        equal(this, module);
+        transforms.push([module, name, index]);
+    });
+
+    var expected = {
+        "m4": {
+            path: "/scripts/m4.js",
+            requires: ["m3", "m2"],
+            skip: false
+        },
+        "m3": {
+            path: "",
+            requires: ["m1"],
+            skip: false
+        },
+        "m2": {
+            path: "/scripts/m2.js",
+            requires: [],
+            skip: false
+        },
+        "m1": {
+            path: "/scripts/m1.js",
+            requires: [],
+            skip: true
+        }
+    };
+
+    deepEqual(transforms, [
+        [expected["m4"], "m4", 3],
+        [expected["m3"], "m3", 2],
+        [expected["m2"], "m2", 1],
+        [expected["m1"], "m1", 0]
+    ]);
+
+    deepEqual(App.register(), expected);
+
+});
+
+test("dependency with transform callback (transform mode)", function () {
+
+    wipe();
+
+    var transforms = [];
+
+    App.register([{
+        name: "m1",
+        path: "/scripts/m1.js",
+        requires: [],
+        skip: true
+    }, {
+        name: "m2",
+        path: "/scripts/m2.js",
+        requires: [],
+        skip: false
+    }, {
+        name: "m3",
+        requires: ["m1"]
+    }, {
+        name: "m4",
+        path: "/scripts/m4.js",
+        requires: ["m3", "m2"]
+    }], function (module, name, index) {
+        equal(this, module);
+
+        var m = extend(extend({"_": true}, module), {path: "/static/js/" + name + ".js?" + index});
+
+        transforms.push([m, name, index]);
+
+        return m;
+    });
+
+    var expected = {
+        "m4": {
+            _: true,
+            path: "/static/js/m4.js?3",
+            requires: ["m3", "m2"],
+            skip: false
+        },
+        "m3": {
+            _: true,
+            path: "/static/js/m3.js?2",
+            requires: ["m1"],
+            skip: false
+        },
+        "m2": {
+            _: true,
+            path: "/static/js/m2.js?1",
+            requires: [],
+            skip: false
+        },
+        "m1": {
+            _: true,
+            path: "/static/js/m1.js?0",
+            requires: [],
+            skip: true
+        }
+    };
+
+    deepEqual(transforms, [
+        [expected["m4"], "m4", 3],
+        [expected["m3"], "m3", 2],
+        [expected["m2"], "m2", 1],
+        [expected["m1"], "m1", 0]
+    ]);
+
+    deepEqual(App.register(), expected);
 
 });

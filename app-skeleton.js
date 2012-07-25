@@ -1,6 +1,6 @@
 /**
  * Application skeleton
- * @version 1.1.1
+ * @version 1.1.2
  * @author  Vladimir Kuznetsov
  * @see     <a href="https://github.com/mistakster/app-skeleton">Application skeleton</a>
  */
@@ -171,20 +171,23 @@
          * Register the new module in application
          *
          * @param module    {Object|Array}  description of one or several modules
+         * @param transform {Function}      (optional) last chance to modify module info before it will be added to registry
          * @return          {Object}        module storage object
          */
-        app.register = function (module) {
-            var i, m;
+        app.register = function (module, transform) {
+            var i, m, moduleObject;
 
             if (module) {
                 for (module = makeArray(module), i = module.length - 1; i >= 0; i -= 1) {
                     m = module[i];
                     if (m.name) {
-                        storage[m.name] = {
+                        moduleObject = {
                             path: m.path || "",
                             requires: m.requires || [],
                             skip: m.skip || false
                         };
+                        storage[m.name] = isFunction(transform) ?
+                            transform.call(moduleObject, moduleObject, m.name, i) || moduleObject : moduleObject;
                     }
                 }
             }

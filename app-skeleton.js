@@ -107,6 +107,7 @@
 
         /**
          * Get or set module defaults
+         *
          * The behavior of the method is determined by the second argument. If it is an object, then the method
          * act like a setter and writes this object to the specified path. In this case the third argument doesn't matter.
          *
@@ -193,7 +194,7 @@
 
 
         /**
-         * Calculate the list of dependences for the specified module
+         * Calculate the list of dependencies for the specified module
          *
          * @param target    {String|Array}  one or several target units
          * @param keep      {Boolean}       don't mark used modules (optional)
@@ -231,7 +232,7 @@
 
         /**
          * Bootstrap resources
-         * Optional second paramerts is a private external storage (for testing purposes only)
+         * Optional second parameters is a private external storage (for testing purposes only)
          * @param needs     {Object}    resource specs
          */
         app.bootstrap = function (needs) {
@@ -246,7 +247,7 @@
 
         /**
          * Load resources
-         * Optional second paramerts is a private external storage (for testing purposes only)
+         * Optional second parameters is a private external storage (for testing purposes only)
          * @param needs     {Object}    resource specs
          */
         app.load = function (needs) {

@@ -46,6 +46,8 @@ function extend(receiver, sender) {
 
 test("register modules", function () {
 
+    wipe();
+
     App.register({
         name: "m1",
         path: "/scripts/m1.js",
@@ -515,5 +517,63 @@ test("dependency with transform callback (transform mode)", function () {
     ]);
 
     deepEqual(App.register(), expected);
+
+});
+
+
+test("versionize one path", function () {
+
+    wipe();
+
+    App.register({
+        name: "m",
+        path: "/scripts/m.js",
+        requires: []
+    }, "version");
+
+    deepEqual(App.register(), {
+        "m": {
+            "path": [
+                "/scripts/m.version.js"
+            ],
+            "requires": [],
+            "skip": false
+        }
+    });
+
+});
+
+test("versionize paths", function () {
+
+    wipe();
+
+    App.register([{
+        name: "m",
+        path: ["/scripts/m.js", "/css/m.css"],
+        requires: []
+    }, {
+        name: "external",
+        path: ["!http://example.com/stuff.js", "!http://example.com/stuff.css"]
+    }], "version");
+
+    var registred = App.register();
+
+    deepEqual(registred.m, {
+        path: [
+            "/scripts/m.version.js",
+            "/css/m.version.css"
+        ],
+        requires: [],
+        skip: false
+    });
+
+    deepEqual(registred.external, {
+        path: [
+            "http://example.com/stuff.js",
+            "http://example.com/stuff.css"
+        ],
+        requires: [],
+        skip: false
+    });
 
 });

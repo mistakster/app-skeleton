@@ -1,6 +1,6 @@
 /**
  * Application skeleton
- * @version 1.1.2
+ * @version 1.1.3
  * @author  Vladimir Kuznetsov
  * @see     <a href="https://github.com/mistakster/app-skeleton">Application skeleton</a>
  */
@@ -30,6 +30,10 @@
 
     function isArray(obj) {
         return TOSTRING.apply(obj) === "[object Array]";
+    }
+
+    function isString(obj) {
+        return TOSTRING.apply(obj) === "[object String]";
     }
 
     function makeArray(obj) {
@@ -166,16 +170,48 @@
             return reduced;
         }
 
+        /**
+         * Insert version string into path property of module
+         * Use <strong>!</strong> prefix in path as unversioned resources
+         *
+         * @param {Object} module mutable description
+         * @param {String} version
+         * @return {Object}
+         */
+        function versionize(module, version) {
+            var i;
+            if (module.path) {
+                if (isString(module.path)) {
+                    module.path = [module.path];
+                }
+                for (i = module.path.length - 1; i >= 0; i--) {
+                    module.path[i] = (function (path) {
+                        return path.indexOf("!") === 0 ? path.substr(1) :
+                            path.replace(/(\.\w+)$/, "." + version + "$1");
+                    }(module.path[i]));
+                }
+            }
+            return module;
+        }
 
         /**
          * Register the new module in application
          *
          * @param {Object|Array} module description of one or several modules
-         * @param {Function} [transform] last chance to modify module info before it will be added to registry
+         * @param {Function|String} [transform] last chance to modify module info before it will be added to registry
          * @return {Object} module storage object
          */
         app.register = function (module, transform) {
             var i, m, moduleObject;
+
+            // use local path transform function
+            if (isString(transform)) {
+                transform = (function (version) {
+                    return function (module) {
+                        return versionize(module, version);
+                    }
+                }(transform));
+            }
 
             if (module) {
                 for (module = makeArray(module), i = module.length - 1; i >= 0; i -= 1) {

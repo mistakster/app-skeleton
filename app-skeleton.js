@@ -56,9 +56,9 @@
         /**
          * Safe get value for specified property
          *
-         * @param   obj     {Object}    source object
-         * @param   name    {String}    property name with dot delimiter
-         * @param   stub    {Object}    stub value for undefined property
+         * @param {Object} obj source object
+         * @param {String} name property name with dot delimiter
+         * @param {Object} stub stub value for undefined property
          */
         function getValue(obj, name, stub) {
             var i, parts;
@@ -96,9 +96,9 @@
         /**
          * Get or create namespace for module
          *
-         * @param   namespace   {String}    named context in public space
-         * @param   origin      {Object}    initial object (optional)
-         * @return              {Object}
+         * @param {String} namespace named context in public space
+         * @param {Object} [origin] initial object
+         * @return {Object}
          */
         app.namespace = function (namespace, origin) {
             return getContext(namespace, origin, window[NS]);
@@ -111,10 +111,10 @@
          * The behavior of the method is determined by the second argument. If it is an object, then the method
          * act like a setter and writes this object to the specified path. In this case the third argument doesn't matter.
          *
-         * @param   namespace   {String}    named context in private space
-         * @param   obj         {Object}    default values for module (optional, object) or subpath (string)
-         * @param   stub        {Object}    optional stub for undefined subpath's value
-         * @return              {Object}
+         * @param {String} namespace named context in private space
+         * @param {Object|String} [obj] default values for module (optional, object) or sub-path (string)
+         * @param {Object} [stub] optional stub for undefined sub-path's value
+         * @return {Object}
          */
         app.defaults = function (namespace, obj, stub) {
             return isObject(obj) ?
@@ -170,9 +170,9 @@
         /**
          * Register the new module in application
          *
-         * @param module    {Object|Array}  description of one or several modules
-         * @param transform {Function}      (optional) last chance to modify module info before it will be added to registry
-         * @return          {Object}        module storage object
+         * @param {Object|Array} module description of one or several modules
+         * @param {Function} [transform] last chance to modify module info before it will be added to registry
+         * @return {Object} module storage object
          */
         app.register = function (module, transform) {
             var i, m, moduleObject;
@@ -199,9 +199,9 @@
         /**
          * Calculate the list of dependencies for the specified module
          *
-         * @param target    {String|Array}  one or several target units
-         * @param keep      {Boolean}       don't mark used modules (optional)
-         * @return          {Array}         list of path values for loading
+         * @param {String|Array} target one or several target units
+         * @param {Boolean} [keep] don't mark used modules (optional)
+         * @return {Array} list of path values for loading
          */
         app.calculate = function (target, keep) {
             var i, sequence = [];
@@ -212,7 +212,6 @@
 
             return reduce(sequence, !keep);
         };
-
 
     }());
 
@@ -236,7 +235,7 @@
         /**
          * Bootstrap resources
          * Optional second parameters is a private external storage (for testing purposes only)
-         * @param needs     {Object}    resource specs
+         * @param {Object} [needs] resource specs
          */
         app.bootstrap = function (needs) {
             var o = getAttrs.apply(this, arguments);
@@ -251,7 +250,7 @@
         /**
          * Load resources
          * Optional second parameters is a private external storage (for testing purposes only)
-         * @param needs     {Object}    resource specs
+         * @param {Object} [needs] resource specs
          */
         app.load = function (needs) {
             var o = getAttrs.apply(this, arguments);

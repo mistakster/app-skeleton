@@ -1,5 +1,5 @@
 /**
- * Application skeleton
+ * @license Application skeleton
  * @version 1.1.3
  * @author  Vladimir Kuznetsov
  * @see     <a href="https://github.com/mistakster/app-skeleton">Application skeleton</a>

@@ -23,10 +23,10 @@
                 // достаем теги картинок из специального хранилища
                 var tags = App.defaults("App.Showroom", "tags", "");
                 // рисуем галерею на странице
-                var sr = App.Showroom.init(tags);
+                var showRoom = App.Showroom.init(tags);
                 // если есть плагин, отслеживающий загрузку картинок, то используем его
                 if ($.ImageLoad) {
-                    sr.on($.ImageLoad.imageready, function () {
+                    showRoom.on($.ImageLoad.imageready, function () {
                         App.Splash.hide();
                     });
                 } else {
@@ -38,7 +38,7 @@
 
     // стартуем загрузку базовых скриптов, например, jQuery
     App.bootstrap({
-        load: "http://code.jquery.com/jquery-1.7.1.min.js",
+        load: "http://code.jquery.com/jquery-1.8.1.min.js",
         complete: function () {
             // в этом месте уже можно декорировать страницу
             // например, добавим класс элементу html

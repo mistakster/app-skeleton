@@ -13,13 +13,16 @@
             // корневой элемент
             var root = $('<ul class="showroom"></ul>').appendTo("body");
             // загрузка фотографий
-            App.Showroom.getPhotos(tags, root);
+            var xhr = App.Showroom.getPhotos(tags);
+            xhr.done(function (data) {
+                App.Showroom.renderPhotos(root, data);
+            });
 
             return root;
         },
 
-        getPhotos: function (tags, root) {
-            var xhr = $.ajax({
+        getPhotos: function (tags) {
+            return $.ajax({
                 url: "http://api.flickr.com/services/rest/?jsoncallback=?",
                 data: {
                     // ключ приложения так же хранится отдельно от кода
@@ -32,44 +35,42 @@
                 dataType: "json",
                 type: "jsonp"
             });
+        },
 
-            xhr.done(function (data) {
-                // конструируем адрес картинки
-                function createImageUrl(photo) {
-                    return 'http://farm' + photo.farm + '.static.flickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '.jpg';
-                }
-
-                // загружаем фотографию
-                function createImage(url, title) {
-
-                    var item = $('<li class="showroom-item"></li>'),
-                        img = $('<img class="photo" alt="' + title + '"/>');
-
-                    if ($.ImageLoad) {
-                        img.on($.ImageLoad.imageready, function () {
-                            // отслеживаем событие загрузки картинки. это нужно сделать до того как загрузка завершится
-                            $(this).css({"opacity": 0.01, "visibility": ""})
-                                .animate({"opacity": 1}, function () {
-                                    $(this).css("opacity", "");
-                                });
-                        }).imageload().css("visibility", "hidden");
+        renderPhotos: function (root, data) {
+            var eles = [], i;
+            if (data.stat === "ok") {
+                $.each(data.photos.photo, function (index) {
+                    if (index >= 10) {
+                        return false;
                     }
-
-                    img.appendTo(item.appendTo(root)).attr("src", url);
-                }
-
-                var eles = [], i;
-
-                if (data.stat === "ok") {
-                    $.each(data.photos.photo, function (index) {
-                        if (index >= 10) {
-                            return false;
-                        }
-                        createImage(createImageUrl(this), this.title);
-                    });
-                }
-            });
+                    createImage(root, createImageUrl(this), this.title);
+                });
+            }
         }
     });
+
+    // конструируем адрес картинки
+    function createImageUrl(photo) {
+        return 'http://farm' + photo.farm + '.static.flickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '.jpg';
+    }
+
+    // загружаем фотографию
+    function createImage(root, url, title) {
+        var item = $('<li class="showroom-item"></li>'),
+            img = $('<img class="photo" alt="' + title + '"/>');
+
+        if ($.ImageLoad) {
+            img.on($.ImageLoad.imageready, function () {
+                // отслеживаем событие загрузки картинки. это нужно сделать до того как загрузка завершится
+                $(this).css({"opacity": 0.01, "visibility": ""})
+                    .animate({"opacity": 1}, function () {
+                        $(this).css("opacity", "");
+                    });
+            }).imageload().css("visibility", "hidden");
+        }
+
+        img.appendTo(item.appendTo(root)).attr("src", url);
+    }
 
 }());
